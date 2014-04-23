@@ -11,6 +11,8 @@ Current this POC is limited to Mac OS using [Py2App](https://pypi.python.org/pyp
 
 However node-webkit is cross platform, so as long as an executable can be created (ie py2exe), then this general approach should be cross platform.
 
+Another platform specific issue to figure out, is where the default notebook directory should be. Currently in the POC, it creates ~/Library/ipyapp-notebooks/.
+
 ## How to create the bundle
 
 A built version - with just IPython can be [downloaded from here](http://ptone.com/temp/IPyApp.zip).
@@ -68,12 +70,12 @@ The layout of the app should look something like:
 	        │   └── test.js
 	        └── nw.icns
 	
-	
+
 
 ### Similar projects:
 
-* https://github.com/liyanage/ipython-notebook - A similar project that uses node-webkit, but does not bundle the python environment, but provides an alternative to opening in the browser.
-* https://github.com/mangecoeur/ipython-desktop - A project to embed IPython notebook into a native Mac App using OS X only web ui views
+* https://github.com/mangecoeur/ipython-desktop - A similar project that uses node-webkit, but does not bundle the python environment, but provides an alternative to opening in the browser.
+* https://github.com/liyanage/ipython-notebook - A project to embed IPython notebook into a native Mac App using OS X only web ui views
 
 
 
