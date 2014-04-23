@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Start</title>
+    <script type="text/javascript">
+  	  var platform = require("os").platform; 	  
+    </script>
+    <style>
+        body {
+        background: #272822;
+        background-image: url("IPythonConsole.png");
+        background-repeat: no-repeat;
+        color: #FFF;
+        font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
+        cursor: default;
+        }    
+    </style>
+  </head>
+  <body background="IPythonConsole.png">
+    <div id="loading">
+    status: <span id="status">status</span>
+    </div>
+      
+    <script type="text/javascript">
+//************************************************************        
+var nbexec = 'nb.app/Contents/MacOS/nb';
+var basedir = '.'; //working dir
+        
+var startpage = 'http://127.0.0.1:8888/';
+var pagecheck = 'http://127.0.0.1:8888/tree'; //no side-effect page to check if webserver is running
+//************************************************************        
+var ipynb_process = null;
+var spawn = require("child_process").spawn;
+var sleep = require("sleep");
+//------------------------------------------------------------
+function Startipynb()
+{
+    console.log('start_nb');
+
+
+    child = spawn(nbexec, ['',],{cwd:basedir});
+    child.stdout.on("data", function(data) {
+        return console.log("stdout:" + data);
+        });
+    child.stderr.on("data", function(data) {
+        return console.log("ERROR: " + data);
+        });
+
+    child.on("exit", function(code) {
+        return console.log("Encoding process exited with code: " + code);
+        });	
+
+    console.log("start_nb_End");
+
+    ipynb_process = child;
+
+    function transferComplete(evt) {
+        console.log("transferComplete");
+      InitMainWindow();
+    }
+
+    function transferFailed(evt) {
+        console.log("transferFailed");
+      document.getElementById("status").textContent = "Waiting...";
+      sleep.sleep(1);
+      checkServer();
+    }
+
+    function reqListener () {
+      document.getElementById("status").textContent = "Launching...";
+    };
+
+    function checkServer()
+    {
+        console.log("checking server");
+        var oReq = new XMLHttpRequest();    
+        oReq.addEventListener("load", transferComplete, false);
+        oReq.addEventListener("error", transferFailed, false);
+
+        oReq.onload = reqListener;
+        oReq.open("GET", pagecheck, true);
+        oReq.send();
+    }
+
+    document.getElementById("status").textContent = "checking...";
+    checkServer();
+
+}
+//------------------------------------------------------------
+function InitMainWindow()
+{
+    var gui = require('nw.gui');
+
+    // Get the current window
+    var win = gui.Window.get();
+
+    var new_win = 
+        gui.Window.open(startpage, {
+            position: 'center',
+            width: 800,
+            height: 900,
+            "toolbar": true,
+            focus: true,
+            show: false
+            });	
+
+    // And listen to new window's focus event
+    new_win.on('focus', function() {
+        console.log('New window is focused-b');
+        });
+
+    // Release the 'win' object here after the new window is closed.
+    new_win.on('closed', function() {
+        console.log("mainclose");
+        console.log(ipynb_process.pid);
+        ipynb_process.kill('SIGINT');
+
+        win.close();
+        win = null;
+
+        });
+
+    new_win.on('loaded', function() {
+        console.log('New window is loaded');
+        win.hide(); 
+        new_win.show();  	
+        new_win.focus();
+
+        var awin = gui.Window.get(this);
+        awin = this.window;
+        awin.onkeyup = function(e) {
+             //console.log(e);
+             if (e.keyIdentifier == "F5")
+             {
+                new_win.reload();
+             }
+             if (e.keyIdentifier == "F11")
+             {
+                new_win.toggleFullscreen();
+             }
+             if (e.keyIdentifier == "F12")
+             {
+
+                if (new_win.isDevToolsOpen())
+                {
+                    new_win.closeDevTools();
+                }else{
+                    new_win.showDevTools();
+                }
+
+             }         
+            };	
+        });
+
+}
+//======================================================================
+var gui = require('nw.gui');
+var win = gui.Window.get();
+win.on('loaded', function() {
+    console.log('New window is loaded');
+    Startipynb();
+  
+    });
+//======================================================================
+    </script>
+  </body>
+</html>

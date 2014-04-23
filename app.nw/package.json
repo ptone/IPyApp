@@ -1,0 +1,14 @@
+{
+  "name": "ipynb",
+  "main": "app://whatever/start.html",
+  "dependencies":
+    {
+    "sleep": ""
+    },
+  "window": {
+  	"width": 473,
+  	"height": 340,  	
+    "toolbar": false,
+    "fullscreen": false
+  }
+}
