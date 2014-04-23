@@ -13,6 +13,8 @@ However node-webkit is cross platform, so as long as an executable can be create
 
 ## How to create the bundle
 
+A built version - with just IPython can be [downloaded from here](http://ptone.com/temp/IPyApp.zip).
+
 First, create a virtualenv and install IPython, py2app and any packages you want included.
 
 Then cd into the py2app directory and build the executable
